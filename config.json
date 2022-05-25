@@ -93,6 +93,6 @@
 	  	{"type":0, "url": "https://xsmm.ru/proxies/http/",  "timeout": 5},
 	  	{"type":0, "url": "https://xsmm.ru/proxies/https/",  "timeout": 5},
 	  	{"type":0, "url": "https://xsmm.ru/proxies/socks4/",  "timeout": 5},
-	  	{"type":0, "url": "https://xsmm.ru/proxies/socks5/",  "timeout": 5},
+	  	{"type":0, "url": "https://xsmm.ru/proxies/socks5/",  "timeout": 5}
 	]
 }
