@@ -913,7 +913,7 @@ class HttpFlood(Thread):
         s = None
         with suppress(Exception), self.open_connection() as s:
             for _ in range(self._rpc):
-                sleep(max(self._rpc / 1000, 1))
+                sleep(6)
                 Tools.send(s, payload)
         Tools.safe_close(s)
 
