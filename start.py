@@ -926,7 +926,7 @@ class HttpFlood(Thread):
             ts = time()
             for _ in range(self._rpc):
                 Tools.send(s, payload)
-                if time() > ts + 120: break
+                if time() > ts + 220: break
         Tools.safe_close(s)
 
     def AVB(self):
